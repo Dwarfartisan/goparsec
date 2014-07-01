@@ -1,4 +1,4 @@
-# GParsec
+# GoParsec
 
 Haskell Parsec Libraray's golang version
 

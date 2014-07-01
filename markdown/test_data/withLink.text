@@ -1,0 +1,2 @@
+JSON 在 PostgreSQL 中已经存在一段时间了。通过这个技术，使我们可以将文本当作 JSON 使用，或将 JSON 保存为文本。这很好用，但是不够高效。如果你既想要灵活的架构，又想要不损失性能，目前已经有 hstore 可用。
+读者可以参见一篇旧文 [hstore to json](http://www.craigkerstiens.com/2013/07/03/hstore-vs-json/) 。
