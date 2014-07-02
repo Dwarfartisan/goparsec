@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	. "github.com/Dwarfartisan/gparsec"
+	. "github.com/Dwarfartisan/goparsec"
 	"io/ioutil"
 	"os"
 )

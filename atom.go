@@ -1,4 +1,4 @@
-package gparsec
+package goparsec
 
 import (
 	"io"

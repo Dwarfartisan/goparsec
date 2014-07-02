@@ -1,6 +1,6 @@
 // parser state 包参考了 golang 的内置包定义，部分代码模仿或来自 text/scanner ，其中有向
 // https://github.com/sanyaade-buildtools/goparsec 学习一部分设计思路
-package gparsec
+package goparsec
 
 import (
 	"errors"
