@@ -86,7 +86,7 @@ func (this *StateInMemory) Pos() int {
 }
 
 func (this *StateInMemory) SeekTo(pos int) {
-	end := len((*this).buffer) - 1
+	end := len((*this).buffer)
 	if pos < 0 || pos > end {
 		message := fmt.Sprintf("%d out range [0, %d]", pos, end)
 		panic(errors.New(message))

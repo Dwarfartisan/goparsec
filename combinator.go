@@ -90,7 +90,7 @@ func OneOf(runes string) Parser {
 		if ok {
 			return r, nil
 		} else {
-			return nil, st.Trap("Excepted one of '%s' but got '%c'", string(runes), r)
+			return nil, st.Trap("Excepted one of \"%s\" but got '%c'", runes, r)
 		}
 	}
 }
@@ -104,7 +104,7 @@ func NoneOf(runes string) Parser {
 		if ok {
 			return r, nil
 		} else {
-			return nil, st.Trap("Excepted one of '%s' but got '%c'", string(runes), r)
+			return nil, st.Trap("Excepted one of \"%s\" but got '%c'", string(runes), r)
 		}
 	}
 }

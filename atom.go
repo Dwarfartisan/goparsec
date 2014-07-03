@@ -100,5 +100,6 @@ func RuneChecker(checker func(rune) bool, expected string) Parser {
 
 var Space = RuneChecker(unicode.IsSpace, "space")
 var Spaces = Skip(Space)
-var NewLine = OneOf("\r\n")
+var NewLineRunes = "\r\n"
+var NewLine = OneOf(NewLineRunes)
 var Eol = Either(Eof, NewLine)

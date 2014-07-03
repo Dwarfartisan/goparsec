@@ -1,19 +1,40 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	. "github.com/Dwarfartisan/goparsec"
 	"io/ioutil"
 	"os"
 )
 
-var Brackets = Between(Rune('['), Rune(']'), Many1(NoneOf("]")))
-var Parentheses = Between(Rune('('), Rune(')'), Many1(NoneOf(")")))
+// return a text skip newline and exclude the runes
+func TextWithout(runes string) Parser {
+	var newline = Bind_(Many1(OneOf(NewLineRunes)), Return(""))
+	var others = Bind(Many1(NoneOf(runes+NewLineRunes)), ReturnString)
+	var content = Many1(Choice(Try(newline), Try(others)))
 
-var Entry = Between(String("[entry:"), Rune(']'), Many1(NoneOf("]")))
+	return func(st ParseState) (interface{}, error) {
+		data, err := content(st)
+		if err == nil {
+			var text = ""
+			for _, item := range data.([]interface{}) {
+				text += item.(string)
+			}
+			return text, nil
+		} else {
+			return nil, err
+		}
+	}
+}
+
+var Brackets = Between(Rune('['), Rune(']'), TextWithout("]"))
+var Parentheses = Between(Rune('('), Rune(')'), TextWithout(")"))
+
+var Entry = Between(String("[entry:"), Rune(']'), TextWithout("]"))
 
 func HTTP(st ParseState) (interface{}, error) {
-	parser := Between(String("[http://"), Rune(']'), Many1(NoneOf("]")))
+	parser := Between(String("[http://"), Rune(']'), TextWithout("]"))
 	data, err := parser(st)
 	if err == nil {
 		return map[string]interface{}{
@@ -58,7 +79,7 @@ func MissMatch(st ParseState) (interface{}, error) {
 	return p(st)
 }
 
-var plain = Many1(NoneOf("["))
+var plain = TextWithout("[")
 var content = Choice(Try(plain), Try(Code), MissMatch)
 var Paragraph = ManyTil(content, Eof)
 
@@ -74,5 +95,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(para)
+	out, _ := json.Marshal(para)
+	fmt.Println(string(out))
 }
