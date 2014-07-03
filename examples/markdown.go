@@ -8,11 +8,14 @@ import (
 	"os"
 )
 
+var newline = Bind_(Many1(OneOf(NewLineRunes)), Return(""))
+var tab = Bind_(String("\\t"), Return("\t"))
+var backslash = Bind_(String("\\\\"), Return("\\"))
+
 // return a text skip newline and exclude the runes
 func TextWithout(runes string) Parser {
-	var newline = Bind_(Many1(OneOf(NewLineRunes)), Return(""))
 	var others = Bind(Many1(NoneOf(runes+NewLineRunes)), ReturnString)
-	var content = Many1(Choice(Try(newline), Try(others)))
+	var content = Many1(Choice(Try(newline), Try(tab), Try(backslash), Try(others)))
 
 	return func(st ParseState) (interface{}, error) {
 		data, err := content(st)
@@ -31,7 +34,7 @@ func TextWithout(runes string) Parser {
 var Brackets = Between(Rune('['), Rune(']'), TextWithout("]"))
 var Parentheses = Between(Rune('('), Rune(')'), TextWithout(")"))
 
-var Entry = Between(String("[entry:"), Rune(']'), TextWithout("]"))
+var Entry = Between(String("[entry://"), Rune(']'), TextWithout("]"))
 
 func HTTP(st ParseState) (interface{}, error) {
 	parser := Between(String("[http://"), Rune(']'), TextWithout("]"))
