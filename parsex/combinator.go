@@ -1,4 +1,4 @@
-package goparsec
+package parsex
 
 import (
 	"reflect"

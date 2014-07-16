@@ -1,6 +1,6 @@
 // parsex state 包参考了 golang 的内置包定义，部分代码模仿或来自 text/scanner ，其中有向
 // https://github.com/sanyaade-buildtools/goparsec 学习一部分设计思路
-package goparsec
+package parsex
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ func (err ParseXError) Error() string {
 }
 
 type ParseXState interface {
-	Next(pred func(interface{}) bool) (r interface{}, ok bool, err error)
+	Next(pred func(interface{}) bool) (x interface{}, ok bool, err error)
 	Pos() int
 	SeekTo(int)
 	Trap(message string, args ...interface{}) error
@@ -30,12 +30,12 @@ type StateXInMemory struct {
 	pos    int
 }
 
-func MemoryParseState(data string) ParseState {
+func MemoryParseState(data string) ParseXState {
 	buffer := ([]rune)(data)
 	return &StateInMemory{buffer, 0}
 }
 
-func (this *StateXInMemory) Next(pred func(interface{}) bool) (r rune, match bool, err error) {
+func (this *StateXInMemory) Next(pred func(interface{}) bool) (x interface{}, match bool, err error) {
 	buffer := (*this).buffer
 	if (*this).pos < len(buffer) {
 		x := buffer[(*this).pos]
