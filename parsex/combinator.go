@@ -1,8 +1,20 @@
 package goparsec
 
 import (
+	"reflect"
 	"strings"
 )
+
+func indexer(data []interface{}) func(x interface{}) int {
+	return func(x interface{}) int {
+		for idx, item := range data {
+			if reflect.DeepEqual(item, x) {
+				return idx
+			}
+		}
+		return -1
+	}
+}
 
 func Try(parser Parser) Parser {
 	return func(st ParseState) (interface{}, error) {
@@ -80,9 +92,10 @@ func Fail(message string) Parser {
 		return nil, st.Trap(message)
 	}
 }
-func OneOf(runes string) Parser {
+func OneOf(data []interface{}) Parser {
+	idxer := indexer(data)
 	return func(st ParseState) (interface{}, error) {
-		r, ok, err := st.Next(func(ru rune) bool { return strings.IndexRune(runes, ru) >= 0 })
+		x, ok, err := st.Next(func(x interface{}) bool { return idxer(x) >= 0 })
 		if err != nil {
 			return nil, err
 		}
@@ -90,21 +103,22 @@ func OneOf(runes string) Parser {
 		if ok {
 			return r, nil
 		} else {
-			return nil, st.Trap("Excepted one of \"%s\" but got '%c'", runes, r)
+			return nil, st.Trap("Excepted one of %v but got %v", data, x)
 		}
 	}
 }
-func NoneOf(runes string) Parser {
+func NoneOf(data []interface{}) Parser {
+	idxer := indexer(data)
 	return func(st ParseState) (interface{}, error) {
-		r, ok, err := st.Next(func(ru rune) bool { return strings.IndexRune(runes, ru) < 0 })
+		x, ok, err := st.Next(func(x interface{}) bool { return idxer(x) < 0 })
 		if err != nil {
 			return nil, err
 		}
 
 		if ok {
-			return r, nil
+			return x, nil
 		} else {
-			return nil, st.Trap("Excepted none of \"%s\" but got '%c'", string(runes), r)
+			return nil, st.Trap("Excepted none of %v but got %c", data, x)
 		}
 	}
 }
