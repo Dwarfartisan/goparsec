@@ -2,7 +2,6 @@ package parsex
 
 import (
 	"reflect"
-	"strings"
 )
 
 func indexer(data []interface{}) func(x interface{}) int {
@@ -17,7 +16,7 @@ func indexer(data []interface{}) func(x interface{}) int {
 }
 
 func Try(parser Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		pos := st.Pos()
 		result, err := parser(st)
 		if err == nil {
@@ -29,7 +28,7 @@ func Try(parser Parser) Parser {
 	}
 }
 func Bind(parser Parser, fun func(interface{}) Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		result, err := parser(st)
 		if err != nil {
 			return nil, err
@@ -39,7 +38,7 @@ func Bind(parser Parser, fun func(interface{}) Parser) Parser {
 }
 
 func Bind_(parserx, parsery Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		_, err := parserx(st)
 		if err != nil {
 			return nil, err
@@ -50,7 +49,7 @@ func Bind_(parserx, parsery Parser) Parser {
 
 // try one parser, if it fails (without consuming input) try the next
 func Either(parserx, parsery Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		pos := st.Pos()
 		x, err := parserx(st)
 		if err == nil {
@@ -64,12 +63,12 @@ func Either(parserx, parsery Parser) Parser {
 	}
 }
 func Return(v interface{}) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		return v, nil
 	}
 }
 func Option(v interface{}, parser Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		return Either(parser, Return(v))(st)
 	}
 }
@@ -83,25 +82,25 @@ func Many1(parser Parser) Parser {
 	return Bind(parser, head)
 }
 func Many(parser Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		return Option([]interface{}{}, Many1(parser))(st)
 	}
 }
 func Fail(message string) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		return nil, st.Trap(message)
 	}
 }
 func OneOf(data []interface{}) Parser {
 	idxer := indexer(data)
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		x, ok, err := st.Next(func(x interface{}) bool { return idxer(x) >= 0 })
 		if err != nil {
 			return nil, err
 		}
 
 		if ok {
-			return r, nil
+			return x, nil
 		} else {
 			return nil, st.Trap("Excepted one of %v but got %v", data, x)
 		}
@@ -109,7 +108,7 @@ func OneOf(data []interface{}) Parser {
 }
 func NoneOf(data []interface{}) Parser {
 	idxer := indexer(data)
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		x, ok, err := st.Next(func(x interface{}) bool { return idxer(x) < 0 })
 		if err != nil {
 			return nil, err
@@ -159,7 +158,7 @@ func Skip(p Parser) Parser {
 }
 
 func Choice(parsers ...Parser) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		var err error
 		var result interface{}
 		for _, parser := range parsers {

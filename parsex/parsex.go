@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type Parser func(ParseState) (interface{}, error)
+type Parser func(ParsexState) (interface{}, error)
 
 // 因为几个基础的 parser 获取到的是 []interface{} ，内部保存 string 或 rune 。所以经常遇到传递出来的
 // inteface{} 要转为 []string 再转 string 的情况，所以这里提供两个

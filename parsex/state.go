@@ -8,34 +8,29 @@ import (
 	"io"
 )
 
-type ParseXError struct {
+type ParsexError struct {
 	Pos     int
 	Message string
 }
 
-func (err ParseXError) Error() string {
+func (err ParsexError) Error() string {
 	return fmt.Sprintf("pos %d :\n%s",
 		err.Pos, err.Message)
 }
 
-type ParseXState interface {
+type ParsexState interface {
 	Next(pred func(interface{}) bool) (x interface{}, ok bool, err error)
 	Pos() int
 	SeekTo(int)
 	Trap(message string, args ...interface{}) error
 }
 
-type StateXInMemory struct {
+type StateInMemory struct {
 	buffer []interface{}
 	pos    int
 }
 
-func MemoryParseState(data string) ParseXState {
-	buffer := ([]rune)(data)
-	return &StateInMemory{buffer, 0}
-}
-
-func (this *StateXInMemory) Next(pred func(interface{}) bool) (x interface{}, match bool, err error) {
+func (this *StateInMemory) Next(pred func(interface{}) bool) (x interface{}, match bool, err error) {
 	buffer := (*this).buffer
 	if (*this).pos < len(buffer) {
 		x := buffer[(*this).pos]
@@ -50,11 +45,11 @@ func (this *StateXInMemory) Next(pred func(interface{}) bool) (x interface{}, ma
 	}
 }
 
-func (this *StateXInMemory) Pos() int {
+func (this *StateInMemory) Pos() int {
 	return (*this).pos
 }
 
-func (this *StateXInMemory) SeekTo(pos int) {
+func (this *StateInMemory) SeekTo(pos int) {
 	end := len((*this).buffer)
 	if pos < 0 || pos > end {
 		message := fmt.Sprintf("%d out range [0, %d]", pos, end)
@@ -63,7 +58,7 @@ func (this *StateXInMemory) SeekTo(pos int) {
 	(*this).pos = pos
 }
 
-func (this *StateXInMemory) Trap(message string, args ...interface{}) error {
-	return ParseError{(*this).line, (*this).column, (*this).pos,
+func (this *StateInMemory) Trap(message string, args ...interface{}) error {
+	return ParsexError{(*this).pos,
 		fmt.Sprintf(message, args...)}
 }

@@ -6,17 +6,17 @@ import (
 	"unicode"
 )
 
-func always(r rune) bool {
+func always(x interface{}) bool {
 	return true
 }
-func deep_equals(x interface{}) func(rune) bool {
+func equals(x interface{}) func(interface{}) bool {
 	return func(data interface{}) bool {
 		return reflect.DeepEqual(x, data)
 	}
 }
 
 func Rune(r rune) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		ru, ok, err := st.Next(equals(r))
 		if err != nil {
 			return nil, err
@@ -29,7 +29,7 @@ func Rune(r rune) Parser {
 	}
 }
 
-func Eof(st ParseState) (interface{}, error) {
+func Eof(st ParsexState) (interface{}, error) {
 	r, _, err := st.Next(always)
 	if err == nil {
 		return nil, st.Trap("Except EOF but got %c", r)
@@ -44,7 +44,7 @@ func Eof(st ParseState) (interface{}, error) {
 
 // parsex 的 String 尝试匹配 State 的下一个 Token，这与 parsec 不同
 func String(s string) Parser {
-	return func(st ParseState) (interface{}, error) {
+	return func(st ParsexState) (interface{}, error) {
 		pos := st.Pos()
 
 		// try and match string
@@ -64,7 +64,7 @@ func String(s string) Parser {
 	}
 }
 
-func AnyRune(st ParseState) (interface{}, error) {
+func AnyRune(st ParsexState) (interface{}, error) {
 	c, _, err := st.Next(always)
 
 	if err == nil {
@@ -78,8 +78,8 @@ func AnyRune(st ParseState) (interface{}, error) {
 	}
 }
 
-func RuneChecker(checker func(rune) bool, expected string) Parser {
-	return func(st ParseState) (interface{}, error) {
+func RuneChecker(checker func(interface{}) bool, expected string) Parser {
+	return func(st ParsexState) (interface{}, error) {
 		r, ok, err := st.Next(checker)
 
 		if err == nil {
@@ -98,8 +98,8 @@ func RuneChecker(checker func(rune) bool, expected string) Parser {
 	}
 }
 
-var Space = RuneChecker(unicode.IsSpace, "space")
+var Space = RuneChecker(func(x interface{}) bool { return unicode.IsSpace(x.(rune)) }, "space")
 var Spaces = Skip(Space)
-var NewLineRunes = "\r\n"
+var NewLineRunes = []interface{}{"\r", "\n"}
 var NewLine = OneOf(NewLineRunes)
 var Eol = Either(Eof, NewLine)
