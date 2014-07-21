@@ -144,6 +144,38 @@ func Skip(p Parser) Parser {
 	return Maybe(Many(p))
 }
 
+func Union(parsers ...Parser) Parser {
+	return func(st ParseState) (interface{}, error) {
+		var ret = make([]interface{}, 0, len(parsers))
+		for _, parser := range parsers {
+			val, err := parser(st)
+			if err == nil {
+				if val != nil {
+					ret = append(ret, val)
+				}
+			} else {
+				return nil, err
+			}
+		}
+		return ret, nil
+	}
+}
+
+func UnionAll(parsers ...Parser) Parser {
+	return func(st ParseState) (interface{}, error) {
+		var ret = make([]interface{}, 0, len(parsers))
+		for _, parser := range parsers {
+			val, err := parser(st)
+			if err == nil {
+				ret = append(ret, val)
+			} else {
+				return nil, err
+			}
+		}
+		return ret, nil
+	}
+}
+
 func Choice(parsers ...Parser) Parser {
 	return func(st ParseState) (interface{}, error) {
 		var err error

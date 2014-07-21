@@ -19,7 +19,7 @@ func (err ParsexError) Error() string {
 }
 
 type ParsexState interface {
-	Next(pred func(interface{}) bool) (x interface{}, ok bool, err error)
+	Next(pred func(int, interface{}) (interface{}, error)) (x interface{}, err error)
 	Pos() int
 	SeekTo(int)
 	Trap(message string, args ...interface{}) error
@@ -30,18 +30,19 @@ type StateInMemory struct {
 	pos    int
 }
 
-func (this *StateInMemory) Next(pred func(interface{}) bool) (x interface{}, match bool, err error) {
+func (this *StateInMemory) Next(pred func(int, interface{}) (interface{}, error)) (x interface{}, err error) {
 	buffer := (*this).buffer
 	if (*this).pos < len(buffer) {
 		x := buffer[(*this).pos]
-		if pred(x) {
+		output, err := pred((*this).pos, x)
+		if err == nil {
 			(*this).pos++
-			return x, true, nil
+			return output, nil
 		} else {
-			return x, false, nil
+			return x, err
 		}
 	} else {
-		return nil, false, io.EOF
+		return nil, io.EOF
 	}
 }
 

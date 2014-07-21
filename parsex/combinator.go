@@ -1,6 +1,7 @@
 package parsex
 
 import (
+	"errors"
 	"reflect"
 )
 
@@ -94,12 +95,14 @@ func Fail(message string) Parser {
 func OneOf(data []interface{}) Parser {
 	idxer := indexer(data)
 	return func(st ParsexState) (interface{}, error) {
-		x, ok, err := st.Next(func(x interface{}) bool { return idxer(x) >= 0 })
-		if err != nil {
-			return nil, err
-		}
-
-		if ok {
+		x, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
+			if idxer(x) >= 0 {
+				return x, nil
+			} else {
+				return nil, errors.New("NotFound")
+			}
+		})
+		if err == nil {
 			return x, nil
 		} else {
 			return nil, st.Trap("Excepted one of %v but got %v", data, x)
@@ -109,15 +112,17 @@ func OneOf(data []interface{}) Parser {
 func NoneOf(data []interface{}) Parser {
 	idxer := indexer(data)
 	return func(st ParsexState) (interface{}, error) {
-		x, ok, err := st.Next(func(x interface{}) bool { return idxer(x) < 0 })
-		if err != nil {
-			return nil, err
-		}
-
-		if ok {
-			return x, nil
+		_, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
+			if idxer(x) < 0 {
+				return nil, nil
+			} else {
+				return nil, errors.New("Except NotFound")
+			}
+		})
+		if err == nil {
+			return nil, nil
 		} else {
-			return nil, st.Trap("Excepted none of %v but got %c", data, x)
+			return nil, err
 		}
 	}
 }
@@ -155,6 +160,38 @@ func Maybe(p Parser) Parser {
 }
 func Skip(p Parser) Parser {
 	return Maybe(Many(p))
+}
+
+func Union(parsers ...Parser) Parser {
+	return func(st ParsexState) (interface{}, error) {
+		var ret = make([]interface{}, 0, len(parsers))
+		for _, parser := range parsers {
+			val, err := parser(st)
+			if err == nil {
+				if val != nil {
+					ret = append(ret, val)
+				}
+			} else {
+				return nil, err
+			}
+		}
+		return ret, nil
+	}
+}
+
+func UnionAll(parsers ...Parser) Parser {
+	return func(st ParsexState) (interface{}, error) {
+		var ret = make([]interface{}, 0, len(parsers))
+		for _, parser := range parsers {
+			val, err := parser(st)
+			if err == nil {
+				ret = append(ret, val)
+			} else {
+				return nil, err
+			}
+		}
+		return ret, nil
+	}
 }
 
 func Choice(parsers ...Parser) Parser {
