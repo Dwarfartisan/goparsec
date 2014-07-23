@@ -15,6 +15,16 @@ Haskell Parsec Libraray's golang version
 由于用在团队内部一个 markdown like 的文档内容解析功能上， 所以目前的测试用例都是基于 markdown 转
 json 这个场景展开的。
 
+## Parsex
+
+Parsex 是 go parsec 的一个包。parsec 的主干是以一个字符流 state parser 接口为基础的。在工作
+中，我遇到了一些更通用的规则构造和解析的需求。所以在 parsec/parsex 包里，我写了一个基于
+[]interface{} 序列的组合子功能。其实这本质上是因为 golang 没有泛型，否则直接把 state parer
+泛型化就可以了。这也是 Haskell 原版的 parsec 没有这种区分的原因。
+
+parsex/combinator_test.go 文件中包含了一个测试用例，可以看作是对一个经过词法解析的简单 token
+流的语法解析。
+
 ## 最后
 
 如果有同行参与进来一起把它通用化当然最好啦，口嫌体正直什么的我是不会做的 ε-(´∀｀; ) 。
