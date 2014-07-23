@@ -8,7 +8,10 @@ Haskell Parsec Libraray's golang version
 
 第一步先支持几个常用组合子，让公司的项目可以做下去，然后……
 
-如果大家期待完成度更高的， 这里 https://github.com/vito/go-parse 有一个，但是五年没有更新了。
+我的项目大量的参考了 https://github.com/sanyaade-buildtools/goparsec ，但是这个项目面向
+byte流，而我需要一个面向 unicode 或更通用的规则解析的工具。所以只好重新实现了一遍。
+
+这里 https://github.com/vito/go-parse 还有一个实现，但是五年没有更新了。
 
 ## 测试
 
