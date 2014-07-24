@@ -18,7 +18,7 @@ var (
 	yesterday = now.Add(dur)
 )
 
-var fromParser = Bind_(String("from"), TimeVar)
+var fromParser = Bind_(String("from"), TimeVal)
 
 func from(st ParsexState) (interface{}, error) {
 	if ts, err := fromParser(st); err == nil {
@@ -30,7 +30,7 @@ func from(st ParsexState) (interface{}, error) {
 	}
 }
 
-var toParser = Bind_(String("to"), TimeVar)
+var toParser = Bind_(String("to"), TimeVal)
 
 func to(st ParsexState) (interface{}, error) {
 	if ts, err := toParser(st); err == nil {

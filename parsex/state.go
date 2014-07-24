@@ -30,6 +30,10 @@ type StateInMemory struct {
 	pos    int
 }
 
+func NewStateInMemory(buffer []interface{}) *StateInMemory {
+	return &StateInMemory{buffer, 0}
+}
+
 func (this *StateInMemory) Next(pred func(int, interface{}) (interface{}, error)) (x interface{}, err error) {
 	buffer := (*this).buffer
 	if (*this).pos < len(buffer) {

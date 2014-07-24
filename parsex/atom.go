@@ -116,10 +116,45 @@ func canbeInt(pos int, x interface{}) (interface{}, error) {
 		} else {
 			return nil, TypeError{"int", val, pos}
 		}
+	case complex128:
+		if imag(val) == 0 {
+			return int(real(val)), nil
+		} else {
+			return nil, TypeError{"int", val, pos}
+		}
 	default:
 		return nil, TypeError{"int", val, pos}
 	}
 }
+func canbeFloat64(pos int, x interface{}) (interface{}, error) {
+	switch val := x.(type) {
+	case int:
+		return float64(val), nil
+	case int64:
+		return float64(val), nil
+	case float32:
+		return float64(val), nil
+	case float64:
+		return val, nil
+	case string:
+		return strconv.ParseFloat(val, 64)
+	case complex64:
+		if imag(val) == 0 {
+			return float64(real(val)), nil
+		} else {
+			return nil, TypeError{"float64", val, pos}
+		}
+	case complex128:
+		if imag(val) == 0 {
+			return real(val), nil
+		} else {
+			return nil, TypeError{"float64", val, pos}
+		}
+	default:
+		return nil, TypeError{"float64", val, pos}
+	}
+}
+
 func intType(pos int, x interface{}) (interface{}, error) {
 	if _, ok := x.(int); ok {
 		return x, nil
@@ -143,8 +178,17 @@ func AnyInt(st ParsexState) (interface{}, error) {
 		return nil, err
 	}
 }
-func TimeVar(st ParsexState) (interface{}, error) {
-	i, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
+func AnyFloat64(st ParsexState) (interface{}, error) {
+	i, err := st.Next(canbeFloat64)
+	if err == nil {
+		return i, nil
+	} else {
+		return nil, err
+	}
+}
+
+func TimeVal(st ParsexState) (interface{}, error) {
+	t, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
 		if _, ok := x.(time.Time); ok {
 			return x, nil
 		} else {
@@ -152,7 +196,22 @@ func TimeVar(st ParsexState) (interface{}, error) {
 		}
 	})
 	if err == nil {
-		return i, nil
+		return t, nil
+	} else {
+		return nil, err
+	}
+}
+
+func StringVal(st ParsexState) (interface{}, error) {
+	t, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
+		if _, ok := x.(string); ok {
+			return x, nil
+		} else {
+			return nil, TypeError{"string", x, pos}
+		}
+	})
+	if err == nil {
+		return t, nil
 	} else {
 		return nil, err
 	}
