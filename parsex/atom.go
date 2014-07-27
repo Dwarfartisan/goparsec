@@ -162,7 +162,16 @@ func intType(pos int, x interface{}) (interface{}, error) {
 		return nil, TypeError{"int", x, pos}
 	}
 }
-func IntVar(st ParsexState) (interface{}, error) {
+
+func float64Type(pos int, x interface{}) (interface{}, error) {
+	if _, ok := x.(float64); ok {
+		return x, nil
+	} else {
+		return nil, TypeError{"float64", x, pos}
+	}
+}
+
+func IntVal(st ParsexState) (interface{}, error) {
 	i, err := st.Next(intType)
 	if err == nil {
 		return i, nil
@@ -180,6 +189,14 @@ func AnyInt(st ParsexState) (interface{}, error) {
 }
 func AnyFloat64(st ParsexState) (interface{}, error) {
 	i, err := st.Next(canbeFloat64)
+	if err == nil {
+		return i, nil
+	} else {
+		return nil, err
+	}
+}
+func Float64Val(st ParsexState) (interface{}, error) {
+	i, err := st.Next(float64Type)
 	if err == nil {
 		return i, nil
 	} else {

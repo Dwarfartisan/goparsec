@@ -92,7 +92,7 @@ func Fail(message string) Parser {
 		return nil, st.Trap(message)
 	}
 }
-func OneOf(data []interface{}) Parser {
+func OneOf(data ...interface{}) Parser {
 	idxer := indexer(data)
 	return func(st ParsexState) (interface{}, error) {
 		x, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
