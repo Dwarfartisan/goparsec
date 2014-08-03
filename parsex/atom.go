@@ -55,6 +55,11 @@ func Rune(r rune) Parser {
 	}
 }
 
+// match anyone else a eof or panic
+func AnyOne(st ParsexState) (interface{}, error) {
+	return st.Next(always)
+}
+
 func Eof(st ParsexState) (interface{}, error) {
 	r, err := st.Next(always)
 	if err == nil {
