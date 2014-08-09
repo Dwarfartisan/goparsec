@@ -1,6 +1,7 @@
 package goparsec
 
 import (
+	"fmt"
 	"io"
 	"unicode"
 )
@@ -103,3 +104,49 @@ var Spaces = Skip(Space)
 var NewLineRunes = "\r\n"
 var NewLine = OneOf(NewLineRunes)
 var Eol = Either(Eof, NewLine)
+var Digit = OneOf("0123456789")
+
+func Int(st ParseState) (interface{}, error) {
+	values := []interface{}{}
+	_, err := Try(Rune('-'))(st)
+	if err == nil {
+		values = append(values, '-')
+	}
+	v, err := Many1(Digit)(st)
+	values = append(values, v.([]interface{})...)
+	if err == nil {
+		return ExtractString(values), nil
+	} else {
+		return nil, err
+	}
+}
+
+func floatPrefix(st ParseState) (interface{}, error) {
+	x := []interface{}{}
+	_, err := Try(Rune('-'))(st)
+	if err == nil {
+		x = []interface{}{'-'}
+	}
+	v, err := Many(Digit)(st)
+	if err == nil {
+		values := v.([]interface{})
+		if len(values) == 0 {
+			return append(x, '0'), nil
+		} else {
+			return append(x, values...), nil
+		}
+	} else {
+		return nil, err
+	}
+}
+
+var Float = Bind(floatPrefix, func(x interface{}) Parser {
+	return func(st ParseState) (interface{}, error) {
+		y, err := Bind_(Rune('.'), Many1(Digit))(st)
+		if err == nil {
+			return fmt.Sprintf("%s.%s", ExtractString(x), ExtractString(y)), nil
+		} else {
+			return nil, err
+		}
+	}
+})
