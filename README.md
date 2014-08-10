@@ -2,6 +2,16 @@
 
 Haskell Parsec Libraray's golang version
 
+## Document
+
+### Paper Style
+
+http://bms.tratao.com/desktop/doc/0c3802e4ee404a71407f34996eff98ef
+
+### Slide Style
+
+http://bms.tratao.com/slide/simple/0c3802e4ee404a71407f34996eff98ef##1
+
 ## 概述
 
 还是那句话，公司自用的东西肯定不会坑，但是可能达到一个可用阶段后会停一段时间。

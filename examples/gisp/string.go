@@ -27,7 +27,7 @@ var EscapeChar = Bind_(Rune('\\'), func(st ParseState) (interface{}, error) {
 	}
 })
 
-var StringVal = Bind(
+var StringParser = Bind(
 	Between(Rune('"'), Rune('"'),
 		Many(Either(Try(EscapeChar), NoneOf("\"")))),
 	ReturnString)

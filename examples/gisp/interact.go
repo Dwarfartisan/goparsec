@@ -4,4 +4,4 @@ import (
 	parsec "github.com/Dwarfartisan/goparsec"
 )
 
-var ParseValue = parsec.Choice(StringVal, Number)
+var ParseValue = parsec.Choice(StringParser, Number, AtomParser)

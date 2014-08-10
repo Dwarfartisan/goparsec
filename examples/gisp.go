@@ -37,6 +37,8 @@ func parseAndPrint(value interface{}) {
 		fmt.Printf("Float64: %f\n", v)
 	case string:
 		fmt.Printf("String: %s\n", v)
+	case gisp.Atom:
+		fmt.Printf("Atom: %v\n", v)
 	case nil:
 		fmt.Println("Nil")
 	default:

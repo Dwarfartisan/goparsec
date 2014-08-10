@@ -113,8 +113,8 @@ func Int(st ParseState) (interface{}, error) {
 		values = append(values, '-')
 	}
 	v, err := Many1(Digit)(st)
-	values = append(values, v.([]interface{})...)
 	if err == nil {
+		values = append(values, v.([]interface{})...)
 		return ExtractString(values), nil
 	} else {
 		return nil, err
