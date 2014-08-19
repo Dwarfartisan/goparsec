@@ -130,7 +130,7 @@ type Quote struct {
 }
 
 func QuoteParser(st ParseState) (interface{}, error) {
-	lisp, err := Bind_(Rune('\''), Either(Try(ListParser), ValueParser))(st)
+	lisp, err := Bind_(Rune('\''), ValueParser)(st)
 	if err == nil {
 		return Quote{lisp}, nil
 	} else {
@@ -145,12 +145,12 @@ func (this Quote) Eval(env Env) (interface{}, error) {
 func ValueParser(st ParseState) (interface{}, error) {
 	value, err := Choice(StringParser,
 		NumberParser,
+		QuoteParser,
 		RuneParser,
 		StringParser,
 		BoolParser,
 		NilParser,
 		AtomParser,
-		QuoteParser,
 		ListParser)(st)
 	return value, err
 }
