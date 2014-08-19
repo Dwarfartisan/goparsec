@@ -1,5 +1,8 @@
 package main
 
+//gisp is a go parsec example, create a shceme like parser. you can run the interpreter though
+//    go run gisp
+
 import (
 	"bufio"
 	"fmt"
