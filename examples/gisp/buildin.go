@@ -397,7 +397,7 @@ func LetExpr(env Env) element {
 			local[name] = value
 		}
 		meta := map[string]interface{}{
-			"local": map[string]interface{}{},
+			"local": local,
 		}
 		let := Let{meta, args}
 		return let.Eval(env)
