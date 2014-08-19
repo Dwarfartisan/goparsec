@@ -59,6 +59,16 @@ func Rune(r rune) Parser {
 func AnyOne(st ParsexState) (interface{}, error) {
 	return st.Next(always)
 }
+func TheOne(one interface{}) Parser {
+	return func(st ParsexState) (interface{}, error) {
+		_, err := st.Next(equals(one))
+		if err == nil {
+			return one, nil
+		} else {
+			return nil, err
+		}
+	}
+}
 
 func Eof(st ParsexState) (interface{}, error) {
 	r, err := st.Next(always)

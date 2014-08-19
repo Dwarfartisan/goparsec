@@ -5,12 +5,7 @@ import (
 	"strconv"
 )
 
-type Env struct {
-	Meta    map[string]interface{}
-	Content interface{}
-}
-
-func Number(st ParseState) (interface{}, error) {
+func NumberParser(st ParseState) (interface{}, error) {
 	f, err := Try(Float)(st)
 	if err == nil {
 		return strconv.ParseFloat(f.(string), 64)

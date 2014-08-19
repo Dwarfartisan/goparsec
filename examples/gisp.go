@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	parsec "github.com/Dwarfartisan/goparsec"
 	"github.com/Dwarfartisan/goparsec/examples/gisp"
 	"os"
 )
@@ -15,16 +14,23 @@ func main() {
 }
 
 func interactive() {
+	parser, err := gisp.NewGisp(map[string]gisp.Environment{
+		"axiom": gisp.Axiom,
+		"prop":  gisp.Propositions,
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print(prompt)
 		buf, _, _ := reader.ReadLine()
-		st := parsec.MemoryParseState(string(buf))
-		value, err := gisp.ParseValue(st)
+		re, err := parser.Parse(string(buf))
 		if err == nil {
-			parseAndPrint(value)
+			parseAndPrint(re)
 		} else {
-			fmt.Printf("Error: %v\n", err)
+			fmt.Println(err)
 		}
 	}
 }
@@ -39,6 +45,10 @@ func parseAndPrint(value interface{}) {
 		fmt.Printf("String: %s\n", v)
 	case gisp.Atom:
 		fmt.Printf("Atom: %v\n", v)
+	case gisp.List:
+		fmt.Printf("List: %v\n", v)
+	case gisp.Function:
+		fmt.Printf("Lambda: %v\n", v)
 	case nil:
 		fmt.Println("Nil")
 	default:
