@@ -209,6 +209,37 @@ func Float64Val(st ParsexState) (interface{}, error) {
 	}
 }
 
+//FIXME: string 类型是一个坑，好大的坑，目前没有更好的办法？
+//       不同 format 类型的坑
+func AnyTime(st ParsexState) (interface{}, error) {
+	t, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
+		switch x.(type) {
+		case string:
+			//只针对这一种情况，其他情况，如2006/01/02 15:04 ， 02/01/2006 ...还有其他格式的字符串
+			result, e := time.Parse("2006-01-02 15:04", x.(string))
+			if e == nil {
+				return result, nil
+			} else {
+				return nil, TypeError{"time", x, pos}
+			}
+		case time.Time:
+			if _, ok := x.(time.Time); ok {
+				return x, nil
+			} else {
+				return nil, TypeError{"time", x, pos}
+			}
+		default:
+			return nil, TypeError{"time", x, pos}
+		}
+
+	})
+	if err == nil {
+		return t, nil
+	} else {
+		return nil, err
+	}
+}
+
 func TimeVal(st ParsexState) (interface{}, error) {
 	t, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
 		if _, ok := x.(time.Time); ok {
@@ -216,6 +247,7 @@ func TimeVal(st ParsexState) (interface{}, error) {
 		} else {
 			return nil, TypeError{"time", x, pos}
 		}
+
 	})
 	if err == nil {
 		return t, nil
