@@ -7,8 +7,6 @@ import (
 	"unicode"
 )
 
-const LISP reflect.Kind = reflect.Invalid + 256
-
 type Atom struct {
 	Name string
 }
@@ -23,10 +21,6 @@ func (this Atom) Eval(env Env) (interface{}, error) {
 	} else {
 		return nil, fmt.Errorf("value of atom %s not found", this.Name)
 	}
-}
-
-func nameChecker(r rune) bool {
-	return unicode.IsLetter(r) || unicode.IsNumber(r)
 }
 
 func AtomParser(st ParseState) (interface{}, error) {
