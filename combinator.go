@@ -176,6 +176,20 @@ func UnionAll(parsers ...Parser) Parser {
 	}
 }
 
+// Choice 实现为以下逻辑的迭代版本：
+// func Choice(parsers ...Parser) Parser {
+// 	switch len(parsers) {
+// 	case 0:
+// 		panic(errors.New("empty choice chain"))
+// 	case 1:
+// 		return parsers[0]
+// 	case 2:
+// 		return Either(Try(parsers[0]), Try(parsers[1]))
+// 	default:
+// 		return Either(Try(parsers[0]), Choice(parsers[1:]))
+// 	}
+// }
+// 其实我比较希望把下面那个东西实现成上面这个样子，就是好像在golang里不太经济……
 func Choice(parsers ...Parser) Parser {
 	return func(st ParseState) (interface{}, error) {
 		var err error
@@ -190,16 +204,29 @@ func Choice(parsers ...Parser) Parser {
 	}
 }
 
-// 其实我比较希望把上面那个东西实现成下面这个样子，就是好像在golang里不太经济……
-// func Choice(parsers ...Parser) Parser {
-// 	switch len(parsers) {
-// 	case 0:
-// 		panic(errors.New("empty choice chain"))
-// 	case 1:
-// 		return parsers[0]
-// 	case 2:
-// 		return Either(Try(parsers[0]), Try(parsers[1]))
-// 	default:
-// 		return Either(Try(parsers[0]), Choice(parsers[1:]))
-// 	}
-// }
+// Binds 相当于用 Bind 对一个 func(interface{})Parser 链做左折叠，起始参数为 first
+func Binds(first Parser, then ...func(interface{}) Parser) Parser {
+	if len(then) == 0 {
+		return first
+	}
+	return func(st ParseState) (interface{}, error) {
+		ret, err := first(st)
+		if err != nil {
+			return nil, err
+		}
+		next := then[0](ret)
+		return Binds(next, then[1:]...)(st)
+	}
+}
+
+// Binds_ 逐个尝试每一个 Parser，直至发生错误或者到达最后，如果到达最后一个 Parser，
+// 返回其结果
+func Binds_(parsers ...Parser) Parser {
+	if len(parsers) < 2 {
+		return Fail("combinator Binds_ need parsers more than 2 as args")
+	}
+	if len(parsers) == 2 {
+		return Bind_(parsers[0], parsers[1])
+	}
+	return Bind_(parsers[0], Binds_(parsers[1:]...))
+}
