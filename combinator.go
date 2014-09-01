@@ -207,7 +207,10 @@ func Choice(parsers ...Parser) Parser {
 // Binds 相当于用 Bind 对一个 func(interface{})Parser 链做左折叠，起始参数为 first
 func Binds(first Parser, then ...func(interface{}) Parser) Parser {
 	if len(then) == 0 {
-		return first
+		return Fail("need args formal as func(interface{})Parser more than 1st.")
+	}
+	if len(then) == 1 {
+		return Bind(first, then[0])
 	}
 	return func(st ParseState) (interface{}, error) {
 		ret, err := first(st)
