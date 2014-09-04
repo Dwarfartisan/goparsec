@@ -40,7 +40,7 @@ func equals(x interface{}) func(int, interface{}) (interface{}, error) {
 	}
 }
 
-func always(pos int, x interface{}) (interface{}, error) {
+func Always(pos int, x interface{}) (interface{}, error) {
 	return x, nil
 }
 
@@ -57,7 +57,7 @@ func Rune(r rune) Parser {
 
 // match anyone else a eof or panic
 func AnyOne(st ParsexState) (interface{}, error) {
-	return st.Next(always)
+	return st.Next(Always)
 }
 func TheOne(one interface{}) Parser {
 	return func(st ParsexState) (interface{}, error) {
@@ -71,7 +71,7 @@ func TheOne(one interface{}) Parser {
 }
 
 func Eof(st ParsexState) (interface{}, error) {
-	r, err := st.Next(always)
+	r, err := st.Next(Always)
 	if err == nil {
 		return nil, st.Trap("Except EOF but got %c", r)
 	} else {
@@ -99,7 +99,7 @@ func String(s string) Parser {
 }
 
 func AnyRune(st ParsexState) (interface{}, error) {
-	c, err := st.Next(always)
+	c, err := st.Next(Always)
 
 	if err == nil {
 		return c, nil
