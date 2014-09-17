@@ -281,6 +281,21 @@ func StringVal(st ParsexState) (interface{}, error) {
 	}
 }
 
+func Nil(st ParsexState) (interface{}, error) {
+	t, err := st.Next(func(pos int, x interface{}) (interface{}, error) {
+		if x == nil {
+			return x, nil
+		} else {
+			return nil, TypeError{"nil", x, pos}
+		}
+	})
+	if err == nil {
+		return t, nil
+	} else {
+		return nil, err
+	}
+}
+
 func RuneChecker(checker func(int, interface{}) (interface{}, error), expected string) Parser {
 	return func(st ParsexState) (interface{}, error) {
 		r, err := st.Next(checker)

@@ -99,11 +99,13 @@ func RuneChecker(checker func(rune) bool, expected string) Parser {
 }
 
 var Space = RuneChecker(unicode.IsSpace, "space")
+var Letter = RuneChecker(unicode.IsLetter, "letter")
+var Number = RuneChecker(unicode.IsNumber, "number")
 var Spaces = Skip(Space)
 var NewLineRunes = "\r\n"
 var NewLine = OneOf(NewLineRunes)
 var Eol = Either(Eof, NewLine)
-var Digit = OneOf("0123456789")
+var Digit = RuneChecker(unicode.IsDigit, "digit")
 
 func Int(st ParseState) (interface{}, error) {
 	pos := st.Pos()
