@@ -83,6 +83,30 @@ func Eof(st ParsexState) (interface{}, error) {
 	}
 }
 
+// Str 用于解析一个 rune 流是否匹配 s 的内容。
+func Str(s string) Parser {
+	return func(st ParsexState) (interface{}, error) {
+		for _, r := range s {
+			checker := RuneChecker(func(pos int, x interface{}) (interface{}, error) {
+				if ru, ok := x.(rune); ok {
+					if ru == r {
+						return x, nil
+					} else {
+						return x, st.Trap("Parsex String %v Error:Except %v but got %v", s, r, ru)
+					}
+				} else {
+					return x, st.Trap("Parsex String %v Error:Except %v but got %v", s, r, ru)
+				}
+			}, s)
+			_, err := checker(st)
+			if err != nil {
+				return nil, st.Trap("Parsex String Error: except %v but error %v", s, err)
+			}
+		}
+		return s, nil
+	}
+}
+
 // parsex 的 String 尝试匹配 State 的下一个 Token，这与 parsec 不同
 func String(s string) Parser {
 	return func(st ParsexState) (interface{}, error) {
@@ -323,4 +347,54 @@ var Space = RuneChecker(func(pos int, x interface{}) (interface{}, error) {
 var Spaces = Skip(Space)
 var NewLineRunes = []interface{}{"\r", "\n"}
 var NewLine = OneOf(NewLineRunes)
+var Digit = RuneChecker(func(pos int, x interface{}) (interface{}, error) {
+	if unicode.IsDigit(x.(rune)) {
+		return x, nil
+	} else {
+		message := fmt.Sprintf("Except space but got %v", x)
+		return x, errors.New(message)
+	}
+}, "digit")
 var Eol = Either(Eof, NewLine)
+
+func Int(st ParsexState) (interface{}, error) {
+	pos := st.Pos()
+	values := []interface{}{}
+	_, err := Try(Rune('-'))(st)
+	if err == nil {
+		values = append(values, '-')
+	}
+	v, err := Many1(Digit)(st)
+	if err == nil {
+		values = append(values, v.([]interface{})...)
+		return ExtractString(values), nil
+	} else {
+		st.SeekTo(pos)
+		return nil, err
+	}
+}
+
+var UnsignedFloat = Bind(Many(Digit), func(input interface{}) Parser {
+	return func(st ParsexState) (interface{}, error) {
+		value, err := Bind_(Rune('.'), Many1(Digit))(st)
+		if err != nil {
+			return nil, err
+		}
+		ret := []interface{}{}
+		ret = append(ret, input.([]interface{})...)
+		ret = append(ret, '.')
+		ret = append(ret, value.([]interface{})...)
+		return ExtractString(ret), nil
+	}
+})
+
+var Float = Either(UnsignedFloat,
+	Bind_(Rune('-'), func(st ParsexState) (interface{}, error) {
+		value, err := UnsignedFloat(st)
+		if err == nil {
+			return ExtractString(append([]interface{}{'-'},
+				value.([]interface{})...)), nil
+		} else {
+			return nil, err
+		}
+	}))
