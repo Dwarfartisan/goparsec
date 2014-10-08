@@ -1,8 +1,6 @@
 package goparsec
 
-import (
-	"strings"
-)
+import "strings"
 
 func Try(parser Parser) Parser {
 	return func(st ParseState) (interface{}, error) {
