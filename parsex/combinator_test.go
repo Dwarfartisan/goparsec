@@ -64,7 +64,7 @@ func TestFromP0(t *testing.T) {
 	if err == nil {
 		t.Logf("success:%v\n", val)
 	} else {
-		t.Fatalf("except extract the time value %v but %v", now, err)
+		t.Fatalf("expect extract the time value %v but %v", now, err)
 	}
 }
 
@@ -77,10 +77,10 @@ func TestFrom0(t *testing.T) {
 		if ok, dur := checker(now); ok {
 			t.Logf("now after yesterday %v", dur)
 		} else {
-			t.Logf("except now after yesterday 24hours but %v", dur)
+			t.Logf("expect now after yesterday 24hours but %v", dur)
 		}
 	} else {
-		t.Fatalf("except extract the time checker from %v but %v", now, err)
+		t.Fatalf("expect extract the time checker from %v but %v", now, err)
 	}
 }
 
@@ -93,10 +93,10 @@ func TestFrom1(t *testing.T) {
 		if ok, dur := checker(now); ok {
 			t.Logf("now after yesterday %v", dur)
 		} else {
-			t.Logf("except now after yesterday 0hours but %v", dur)
+			t.Logf("expect now after yesterday 0hours but %v", dur)
 		}
 	} else {
-		t.Fatalf("except extract the time checker from %v but %v", now, err)
+		t.Fatalf("expect extract the time checker from %v but %v", now, err)
 	}
 }
 
@@ -109,10 +109,10 @@ func TestFrom2(t *testing.T) {
 		if ok, dur := checker(yesterday); !ok {
 			t.Logf("now after yesterday %v", dur)
 		} else {
-			t.Logf("except now after yesterday 0hours but %v", dur)
+			t.Logf("expect now after yesterday 0hours but %v", dur)
 		}
 	} else {
-		t.Fatalf("except extract the time checker from %v but %v", now, err)
+		t.Fatalf("expect extract the time checker from %v but %v", now, err)
 	}
 }
 
@@ -123,7 +123,7 @@ func TestToP0(t *testing.T) {
 	if err == nil {
 		t.Logf("success:%v\n", val)
 	} else {
-		t.Fatalf("except extract the time value %v but %v", now, err)
+		t.Fatalf("expect extract the time value %v but %v", now, err)
 	}
 }
 
@@ -134,10 +134,10 @@ func TestTo0(t *testing.T) {
 	if err == nil {
 		checker := chk.(func(time.Time) (bool, interface{}))
 		if ok, dur := checker(yesterday); !ok {
-			t.Fatalf("except now after yesterday 24hours but %v", dur)
+			t.Fatalf("expect now after yesterday 24hours but %v", dur)
 		}
 	} else {
-		t.Fatalf("except extract the time checker from %v but %v", now, err)
+		t.Fatalf("expect extract the time checker from %v but %v", now, err)
 	}
 }
 
@@ -148,10 +148,10 @@ func TestTo1(t *testing.T) {
 	if err == nil {
 		checker := chk.(func(time.Time) (bool, interface{}))
 		if ok, dur := checker(now); !ok {
-			t.Fatalf("except now after yesterday 0hours but %v", dur)
+			t.Fatalf("expect now after yesterday 0hours but %v", dur)
 		}
 	} else {
-		t.Fatalf("except extract the time checker from %v but %v", now, err)
+		t.Fatalf("expect extract the time checker from %v but %v", now, err)
 	}
 }
 
@@ -162,10 +162,10 @@ func TestTo2(t *testing.T) {
 	if err == nil {
 		checker := chk.(func(time.Time) (bool, interface{}))
 		if ok, dur := checker(now); ok {
-			t.Fatalf("except now after yesterday 0hours but %v", dur)
+			t.Fatalf("expect now after yesterday 0hours but %v", dur)
 		}
 	} else {
-		t.Fatalf("except extract the time checker from %v but %v", now, err)
+		t.Fatalf("expect extract the time checker from %v but %v", now, err)
 	}
 }
 
@@ -176,7 +176,7 @@ func TestFromToP0(t *testing.T) {
 	if err == nil {
 		t.Logf("success:%v\n", val)
 	} else {
-		t.Fatalf("except extract the time values %v but %v", []interface{}{yesterday, now}, err)
+		t.Fatalf("expect extract the time values %v but %v", []interface{}{yesterday, now}, err)
 	}
 }
 
@@ -190,9 +190,9 @@ func TestFromTo0(t *testing.T) {
 		if ok, dur := checker.(func(time.Time) (bool, interface{}))(date); ok {
 			t.Logf("success:%v\n", dur)
 		} else {
-			t.Fatalf("except find %v in duration from %v to %v but failed", date, yesterday, now)
+			t.Fatalf("expect find %v in duration from %v to %v but failed", date, yesterday, now)
 		}
 	} else {
-		t.Fatalf("except create a duration checker from %v to %v but failed: %v", yesterday, now, err)
+		t.Fatalf("expect create a duration checker from %v to %v but failed: %v", yesterday, now, err)
 	}
 }

@@ -11,13 +11,13 @@ import (
 )
 
 type NotEqual struct {
-	Except interface{}
+	expect interface{}
 	Value  interface{}
 	Pos    int
 }
 
 func (this NotEqual) Error() string {
-	return fmt.Sprintf("Postion: %d,  Except %v but got %v", this.Pos, this.Except, this.Value)
+	return fmt.Sprintf("Postion: %d,  expect %v but got %v", this.Pos, this.expect, this.Value)
 }
 
 type TypeError struct {
@@ -27,7 +27,7 @@ type TypeError struct {
 }
 
 func (this TypeError) Error() string {
-	return fmt.Sprintf("Postion: %d,  Except %v as a %s", this.Pos, this.Value, this.Type)
+	return fmt.Sprintf("Postion: %d,  expect %v as a %s", this.Pos, this.Value, this.Type)
 }
 
 func equals(x interface{}) func(int, interface{}) (interface{}, error) {
@@ -73,7 +73,7 @@ func TheOne(one interface{}) Parser {
 func Eof(st ParsexState) (interface{}, error) {
 	r, err := st.Next(Always)
 	if err == nil {
-		return nil, st.Trap("Except EOF but got %c", r)
+		return nil, st.Trap("expect EOF but got %c", r)
 	} else {
 		if err == io.EOF {
 			return nil, nil
@@ -92,15 +92,15 @@ func Str(s string) Parser {
 					if ru == r {
 						return x, nil
 					} else {
-						return x, st.Trap("Parsex String %v Error:Except %v but got %v", s, r, ru)
+						return x, st.Trap("Parsex String %v Error:expect %v but got %v", s, r, ru)
 					}
 				} else {
-					return x, st.Trap("Parsex String %v Error:Except %v but got %v", s, r, ru)
+					return x, st.Trap("Parsex String %v Error:expect %v but got %v", s, r, ru)
 				}
 			}, s)
 			_, err := checker(st)
 			if err != nil {
-				return nil, st.Trap("Parsex String Error: except %v but error %v", s, err)
+				return nil, st.Trap("Parsex String Error: expect %v but error %v", s, err)
 			}
 		}
 		return s, nil
@@ -340,7 +340,7 @@ var Space = RuneChecker(func(pos int, x interface{}) (interface{}, error) {
 	if unicode.IsSpace(x.(rune)) {
 		return x, nil
 	} else {
-		message := fmt.Sprintf("Except space but got %v", x)
+		message := fmt.Sprintf("expect space but got %v", x)
 		return x, errors.New(message)
 	}
 }, "space")
@@ -351,7 +351,7 @@ var Digit = RuneChecker(func(pos int, x interface{}) (interface{}, error) {
 	if unicode.IsDigit(x.(rune)) {
 		return x, nil
 	} else {
-		message := fmt.Sprintf("Except space but got %v", x)
+		message := fmt.Sprintf("expect space but got %v", x)
 		return x, errors.New(message)
 	}
 }, "digit")

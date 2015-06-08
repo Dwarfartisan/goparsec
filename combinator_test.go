@@ -10,7 +10,7 @@ func TestBinds_(t *testing.T) {
 	checker := Binds_(String("int"), Spaces, String("opt"), Spaces, String("int"), Eof)
 	_, err := checker(st)
 	if err != nil {
-		t.Fatalf("except the Binds_ checker success but %v", err)
+		t.Fatalf("expect the Binds_ checker success but %v", err)
 	}
 }
 
@@ -20,6 +20,6 @@ func TestBindsFail_(t *testing.T) {
 	checker := Binds_(String("int"), Spaces, String("opt"), Spaces, String("int"), Eof)
 	_, err := checker(st)
 	if err == nil {
-		t.Fatalf("except the Binds_ checker failed at \"%s\"", data)
+		t.Fatalf("expect the Binds_ checker failed at \"%s\"", data)
 	}
 }

@@ -13,7 +13,7 @@ var BoolParser = Bind(Choice(String("true"), String("false")), func(input interf
 		case "false":
 			return false, nil
 		default:
-			return nil, fmt.Errorf("Unexcept bool token %v", input)
+			return nil, fmt.Errorf("Unexpect bool token %v", input)
 		}
 	}
 })

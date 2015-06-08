@@ -55,6 +55,6 @@ func parseAndPrint(value interface{}) {
 	case nil:
 		fmt.Println("Nil")
 	default:
-		fmt.Printf("Unexcept: %v\n", v)
+		fmt.Printf("Unexpect: %v\n", v)
 	}
 }

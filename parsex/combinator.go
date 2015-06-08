@@ -105,7 +105,7 @@ func OneOf(data ...interface{}) Parser {
 		if err == nil {
 			return x, nil
 		} else {
-			return nil, st.Trap("Excepted one of %v but got %v", data, x)
+			return nil, st.Trap("expected one of %v but got %v", data, x)
 		}
 	}
 }
@@ -116,7 +116,7 @@ func NoneOf(data []interface{}) Parser {
 			if idxer(x) < 0 {
 				return nil, nil
 			} else {
-				return nil, errors.New("Except NotFound")
+				return nil, errors.New("expect NotFound")
 			}
 		})
 		if err == nil {

@@ -32,7 +32,7 @@ func Eof(st ParseState) (interface{}, error) {
 	r, _, err := st.Next(always)
 	if err == nil {
 		st.SeekTo(st.Pos() - 1)
-		return nil, st.Trap("Except EOF but got %c", r)
+		return nil, st.Trap("expect EOF but got %c", r)
 	} else {
 		if err == io.EOF {
 			return nil, nil
