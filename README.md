@@ -2,7 +2,7 @@
 
 Haskell Parsec Libraray's golang version
 
-PLEASE USE [http://github.com/Dwarfartisan/goparsec2](goparsec2) BUT THIS. GOPARSEC2 LIKE HASKELL PRASEC LIBRARY THAN GOPARSEC. IT SUPPORT MONAD BIND/THEN/OVER.
+PLEASE USE [goparsec2](http://github.com/Dwarfartisan/goparsec2) BUT THIS. GOPARSEC2 LIKE HASKELL PRASEC LIBRARY THAN GOPARSEC. IT SUPPORT MONAD BIND/THEN/OVER.
 
 ## Document
 
